@@ -1,17 +1,13 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LocateFixed } from "lucide-react";
 import DropdownMenuEntity from "./components/DropdownMenuEntity";
 import { Button } from "./components/ui/button";
 import PrayerCard from "./PrayerCard";
+import { useFetchPrayers } from "./hook/useFetchPrayers";
+import { SkeletonCards } from "./components/SkeletonCards";
 
 function App() {
+  const { prayers, loading, error } = useFetchPrayers();
   return (
     <div className="bg-primary min-h-screen overflow-hidden center-flex-col">
       <div className="container center-flex-col gap-2 md:gap-3">
@@ -43,7 +39,7 @@ function App() {
           </div>
         </div>
 
-        <Card className="w-[95%]">
+        <Card className="w-[95%] h-[337px]">
           <CardHeader className="p-3 center-flex-col sm:center-flex-row border-primary border-b">
             <div className="date ">
               <p>12 - 2 - 2020</p>
@@ -58,26 +54,24 @@ function App() {
             </div>
           </CardHeader>
           <CardContent>
-            {/* <p className="text-center text-red-500 text-xl sm:text-2xl font-extrabold tracking-widest m-auto p-10">
-              Error loading prayer times!
-            </p> */}
             <div>
-              <div className="center-flex-row gap-2 md:gap-3 py-4">
-                {/* <ActivePrayerCard
-                // key={index}
-                // prayerName={prayerTime.displayName}
-                // prayerTime={moment(prayerTime[prayers[index]], "HH:mm").format(
-                //   "hh:mm A"
-                // )}
-                // counter={countdown}
-                // upcomingPrayer={t("Upcoming Prayer")}
-              /> */}
-                {["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"].map(
-                  (prayer) => (
-                    <PrayerCard prayerName={prayer} prayerTime="10: 35" />
-                  )
-                )}
-              </div>
+              {loading ? (
+                <SkeletonCards count={6} />
+              ) : error ? (
+                <p className="text-center text-red-500 text-xl sm:text-2xl font-extrabold tracking-widest m-auto p-10">
+                  Error loading prayer times!
+                </p>
+              ) : (
+                <div className="center-flex-row gap-2 md:gap-3 py-4">
+                  {prayers?.map((prayer) => (
+                    <PrayerCard
+                      key={prayer.name}
+                      prayerName={prayer.name}
+                      prayerTime={prayer.time}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -87,3 +81,15 @@ function App() {
 }
 
 export default App;
+
+{
+  /* <ActivePrayerCard
+                // key={index}
+                // prayerName={prayerTime.displayName}
+                // prayerTime={moment(prayerTime[prayers[index]], "HH:mm").format(
+                //   "hh:mm A"
+                // )}
+                // counter={countdown}
+                // upcomingPrayer={t("Upcoming Prayer")}
+              /> */
+}
